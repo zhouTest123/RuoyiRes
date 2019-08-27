@@ -5,7 +5,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,11 +26,15 @@ import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 用户信息
  * 
  * @author ruoyi
  */
+@Api("系统用户信息管理")
 @Controller
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController
@@ -56,7 +59,8 @@ public class SysUserController extends BaseController
     {
         return prefix + "/user";
     }
-
+    
+    @ApiOperation("获取用户列表")
     @RequiresPermissions("system:user:list")
     @PostMapping("/list")
     @ResponseBody
@@ -114,23 +118,28 @@ public class SysUserController extends BaseController
     /**
      * 新增保存用户
      */
+    @ApiOperation("新增用户信息")
     @RequiresPermissions("system:user:add")
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(@Validated SysUser user)
+    public AjaxResult addSave(SysUser user)
     {
-        if (UserConstants.USER_NAME_NOT_UNIQUE.equals(userService.checkLoginNameUnique(user.getLoginName())))
+        if (StringUtils.isNotNull(user.getUserId()) && SysUser.isAdmin(user.getUserId()))
         {
-            return error("新增用户'" + user.getLoginName() + "'失败，登录账号已存在");
+            return error("不允许修改超级管理员用户");
+        }
+        else if (UserConstants.USER_NAME_NOT_UNIQUE.equals(userService.checkLoginNameUnique(user.getLoginName())))
+        {
+            return error("保存用户'" + user.getLoginName() + "'失败，登录账号已存在");
         }
         else if (UserConstants.USER_PHONE_NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
         {
-            return error("新增用户'" + user.getLoginName() + "'失败，手机号码已存在");
+            return error("保存用户'" + user.getLoginName() + "'失败，手机号码已存在");
         }
         else if (UserConstants.USER_EMAIL_NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
-            return error("新增用户'" + user.getLoginName() + "'失败，邮箱账号已存在");
+            return error("保存用户'" + user.getLoginName() + "'失败，邮箱账号已存在");
         }
         user.setSalt(ShiroUtils.randomSalt());
         user.setPassword(passwordService.encryptPassword(user.getLoginName(), user.getPassword(), user.getSalt()));
@@ -141,6 +150,7 @@ public class SysUserController extends BaseController
     /**
      * 修改用户
      */
+    @ApiOperation("修改用户信息")
     @GetMapping("/edit/{userId}")
     public String edit(@PathVariable("userId") Long userId, ModelMap mmap)
     {
@@ -153,11 +163,12 @@ public class SysUserController extends BaseController
     /**
      * 修改保存用户
      */
+    @ApiOperation("保存用户信息")
     @RequiresPermissions("system:user:edit")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(@Validated SysUser user)
+    public AjaxResult editSave(SysUser user)
     {
         if (StringUtils.isNotNull(user.getUserId()) && SysUser.isAdmin(user.getUserId()))
         {
@@ -165,16 +176,17 @@ public class SysUserController extends BaseController
         }
         else if (UserConstants.USER_PHONE_NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
         {
-            return error("修改用户'" + user.getLoginName() + "'失败，手机号码已存在");
+            return error("保存用户'" + user.getLoginName() + "'失败，手机号码已存在");
         }
         else if (UserConstants.USER_EMAIL_NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
-            return error("修改用户'" + user.getLoginName() + "'失败，邮箱账号已存在");
+            return error("保存用户'" + user.getLoginName() + "'失败，邮箱账号已存在");
         }
         user.setUpdateBy(ShiroUtils.getLoginName());
         return toAjax(userService.updateUser(user));
     }
 
+    @ApiOperation("重置密码")
     @RequiresPermissions("system:user:resetPwd")
     @Log(title = "重置密码", businessType = BusinessType.UPDATE)
     @GetMapping("/resetPwd/{userId}")
@@ -184,6 +196,7 @@ public class SysUserController extends BaseController
         return prefix + "/resetPwd";
     }
 
+    @ApiOperation("重置密码")
     @RequiresPermissions("system:user:resetPwd")
     @Log(title = "重置密码", businessType = BusinessType.UPDATE)
     @PostMapping("/resetPwd")
@@ -203,6 +216,7 @@ public class SysUserController extends BaseController
         return error();
     }
 
+    @ApiOperation("删除用户信息")
     @RequiresPermissions("system:user:remove")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
@@ -252,6 +266,7 @@ public class SysUserController extends BaseController
     /**
      * 用户状态修改
      */
+    @ApiOperation("用户状态修改")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @RequiresPermissions("system:user:edit")
     @PostMapping("/changeStatus")
