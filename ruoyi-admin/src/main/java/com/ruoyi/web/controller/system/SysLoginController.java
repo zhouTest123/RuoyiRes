@@ -15,11 +15,15 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 登录验证
  * 
  * @author ruoyi
  */
+@Api("登录")
 @Controller
 public class SysLoginController extends BaseController
 {
@@ -35,6 +39,7 @@ public class SysLoginController extends BaseController
         return "login";
     }
 
+    @ApiOperation("登录")
     @PostMapping("/login")
     @ResponseBody
     public AjaxResult ajaxLogin(String username, String password, Boolean rememberMe)
