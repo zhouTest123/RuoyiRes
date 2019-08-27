@@ -5,7 +5,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,11 +20,15 @@ import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysDictData;
 import com.ruoyi.system.service.ISysDictDataService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 数据字典信息
  * 
  * @author ruoyi
  */
+@Api("数据字典")
 @Controller
 @RequestMapping("/system/dict/data")
 public class SysDictDataController extends BaseController
@@ -42,6 +45,7 @@ public class SysDictDataController extends BaseController
         return prefix + "/data";
     }
 
+    @ApiOperation("获取数据字典列表")
     @PostMapping("/list")
     @RequiresPermissions("system:dict:list")
     @ResponseBody
@@ -52,6 +56,7 @@ public class SysDictDataController extends BaseController
         return getDataTable(list);
     }
 
+    @ApiOperation("导出数据字典列表")
     @Log(title = "字典数据", businessType = BusinessType.EXPORT)
     @RequiresPermissions("system:dict:export")
     @PostMapping("/export")
@@ -74,13 +79,14 @@ public class SysDictDataController extends BaseController
     }
 
     /**
-     * 新增保存字典类型
+     * 新增保存数据字典
      */
+    @ApiOperation("新增保存数据字典")
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @RequiresPermissions("system:dict:add")
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(@Validated SysDictData dict)
+    public AjaxResult addSave(SysDictData dict)
     {
         dict.setCreateBy(ShiroUtils.getLoginName());
         return toAjax(dictDataService.insertDictData(dict));
@@ -97,18 +103,20 @@ public class SysDictDataController extends BaseController
     }
 
     /**
-     * 修改保存字典类型
+     * 修改保存字典
      */
+    @ApiOperation("修改保存数据字典")
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @RequiresPermissions("system:dict:edit")
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(@Validated SysDictData dict)
+    public AjaxResult editSave(SysDictData dict)
     {
         dict.setUpdateBy(ShiroUtils.getLoginName());
         return toAjax(dictDataService.updateDictData(dict));
     }
 
+    @ApiOperation("删除数据字典")
     @Log(title = "字典数据", businessType = BusinessType.DELETE)
     @RequiresPermissions("system:dict:remove")
     @PostMapping("/remove")
