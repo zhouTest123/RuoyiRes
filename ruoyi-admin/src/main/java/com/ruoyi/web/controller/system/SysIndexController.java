@@ -12,11 +12,15 @@ import com.ruoyi.system.domain.SysMenu;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysMenuService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 首页 业务处理
  * 
  * @author ruoyi
  */
+@Api("首页")
 @Controller
 public class SysIndexController extends BaseController
 {
@@ -24,6 +28,7 @@ public class SysIndexController extends BaseController
     private ISysMenuService menuService;
 
     // 系统首页
+    @ApiOperation("系统首页")
     @GetMapping("/index")
     public String index(ModelMap mmap)
     {
