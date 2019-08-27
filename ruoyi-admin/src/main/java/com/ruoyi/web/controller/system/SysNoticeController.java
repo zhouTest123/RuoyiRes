@@ -19,11 +19,15 @@ import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysNotice;
 import com.ruoyi.system.service.ISysNoticeService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 公告 信息操作处理
  * 
  * @author ruoyi
  */
+@Api("公告信息操作处理")
 @Controller
 @RequestMapping("/system/notice")
 public class SysNoticeController extends BaseController
@@ -43,6 +47,7 @@ public class SysNoticeController extends BaseController
     /**
      * 查询公告列表
      */
+    @ApiOperation("获取公告信息列表")
     @RequiresPermissions("system:notice:list")
     @PostMapping("/list")
     @ResponseBody
@@ -65,6 +70,7 @@ public class SysNoticeController extends BaseController
     /**
      * 新增保存公告
      */
+    @ApiOperation("新增保存公告")
     @RequiresPermissions("system:notice:add")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
     @PostMapping("/add")
@@ -88,6 +94,7 @@ public class SysNoticeController extends BaseController
     /**
      * 修改保存公告
      */
+    @ApiOperation("修改保存公告")
     @RequiresPermissions("system:notice:edit")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
@@ -101,6 +108,7 @@ public class SysNoticeController extends BaseController
     /**
      * 删除公告
      */
+    @ApiOperation("删除公告")
     @RequiresPermissions("system:notice:remove")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
