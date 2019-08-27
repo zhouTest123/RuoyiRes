@@ -5,14 +5,12 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.Ztree;
@@ -23,11 +21,15 @@ import com.ruoyi.system.domain.SysDept;
 import com.ruoyi.system.domain.SysRole;
 import com.ruoyi.system.service.ISysDeptService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 部门信息
  * 
  * @author ruoyi
  */
+@Api("部门信息")
 @Controller
 @RequestMapping("/system/dept")
 public class SysDeptController extends BaseController
@@ -44,8 +46,9 @@ public class SysDeptController extends BaseController
         return prefix + "/dept";
     }
 
+    @ApiOperation("获取部门信息列表")
     @RequiresPermissions("system:dept:list")
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ResponseBody
     public List<SysDept> list(SysDept dept)
     {
@@ -66,16 +69,13 @@ public class SysDeptController extends BaseController
     /**
      * 新增保存部门
      */
+    @ApiOperation("新增保存部门信息")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @RequiresPermissions("system:dept:add")
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(@Validated SysDept dept)
+    public AjaxResult addSave(SysDept dept)
     {
-        if (UserConstants.DEPT_NAME_NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
-        {
-            return error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
-        }
         dept.setCreateBy(ShiroUtils.getLoginName());
         return toAjax(deptService.insertDept(dept));
     }
@@ -98,20 +98,13 @@ public class SysDeptController extends BaseController
     /**
      * 保存
      */
+    @ApiOperation("修改保存部门信息")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @RequiresPermissions("system:dept:edit")
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(@Validated SysDept dept)
+    public AjaxResult editSave(SysDept dept)
     {
-        if (UserConstants.DEPT_NAME_NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept)))
-        {
-            return error("修改部门'" + dept.getDeptName() + "'失败，部门名称已存在");
-        }
-        else if (dept.getParentId().equals(dept.getDeptId()))
-        {
-            return error("修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己");
-        }
         dept.setUpdateBy(ShiroUtils.getLoginName());
         return toAjax(deptService.updateDept(dept));
     }
@@ -119,6 +112,7 @@ public class SysDeptController extends BaseController
     /**
      * 删除
      */
+    @ApiOperation("删除部门信息")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @RequiresPermissions("system:dept:remove")
     @GetMapping("/remove/{deptId}")
@@ -139,6 +133,7 @@ public class SysDeptController extends BaseController
     /**
      * 校验部门名称
      */
+    @ApiOperation("校验部门名称")
     @PostMapping("/checkDeptNameUnique")
     @ResponseBody
     public String checkDeptNameUnique(SysDept dept)
@@ -149,6 +144,7 @@ public class SysDeptController extends BaseController
     /**
      * 选择部门树
      */
+    @ApiOperation("选择部门树")
     @GetMapping("/selectDeptTree/{deptId}")
     public String selectDeptTree(@PathVariable("deptId") Long deptId, ModelMap mmap)
     {
@@ -159,6 +155,7 @@ public class SysDeptController extends BaseController
     /**
      * 加载部门列表树
      */
+    @ApiOperation("加载部门列表树")
     @GetMapping("/treeData")
     @ResponseBody
     public List<Ztree> treeData()
@@ -170,6 +167,7 @@ public class SysDeptController extends BaseController
     /**
      * 加载角色部门（数据权限）列表树
      */
+    @ApiOperation("加载角色部门（数据权限）列表树")
     @GetMapping("/roleDeptTreeData")
     @ResponseBody
     public List<Ztree> deptTreeData(SysRole role)
