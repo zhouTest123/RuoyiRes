@@ -1,3 +1,4 @@
+
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
@@ -5,14 +6,12 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.Ztree;
@@ -22,11 +21,15 @@ import com.ruoyi.system.domain.SysMenu;
 import com.ruoyi.system.domain.SysRole;
 import com.ruoyi.system.service.ISysMenuService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 菜单信息
  * 
  * @author ruoyi
  */
+@Api("菜单信息")
 @Controller
 @RequestMapping("/system/menu")
 public class SysMenuController extends BaseController
@@ -43,8 +46,9 @@ public class SysMenuController extends BaseController
         return prefix + "/menu";
     }
 
+    @ApiOperation("获取菜单信息列表")
     @RequiresPermissions("system:menu:list")
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ResponseBody
     public List<SysMenu> list(SysMenu menu)
     {
@@ -56,6 +60,7 @@ public class SysMenuController extends BaseController
     /**
      * 删除菜单
      */
+    @ApiOperation("删除菜单信息")
     @Log(title = "菜单管理", businessType = BusinessType.DELETE)
     @RequiresPermissions("system:menu:remove")
     @GetMapping("/remove/{menuId}")
@@ -98,16 +103,13 @@ public class SysMenuController extends BaseController
     /**
      * 新增保存菜单
      */
+    @ApiOperation("新增菜单信息")
     @Log(title = "菜单管理", businessType = BusinessType.INSERT)
     @RequiresPermissions("system:menu:add")
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(@Validated SysMenu menu)
+    public AjaxResult addSave(SysMenu menu)
     {
-        if (UserConstants.MENU_NAME_NOT_UNIQUE.equals(menuService.checkMenuNameUnique(menu)))
-        {
-            return error("新增菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
-        }
         menu.setCreateBy(ShiroUtils.getLoginName());
         ShiroUtils.clearCachedAuthorizationInfo();
         return toAjax(menuService.insertMenu(menu));
@@ -126,16 +128,13 @@ public class SysMenuController extends BaseController
     /**
      * 修改保存菜单
      */
+    @ApiOperation("修改菜单")
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @RequiresPermissions("system:menu:edit")
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(@Validated SysMenu menu)
+    public AjaxResult editSave(SysMenu menu)
     {
-        if (UserConstants.MENU_NAME_NOT_UNIQUE.equals(menuService.checkMenuNameUnique(menu)))
-        {
-            return error("修改菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
-        }
         menu.setUpdateBy(ShiroUtils.getLoginName());
         ShiroUtils.clearCachedAuthorizationInfo();
         return toAjax(menuService.updateMenu(menu));
@@ -163,6 +162,7 @@ public class SysMenuController extends BaseController
     /**
      * 加载角色菜单列表树
      */
+    @ApiOperation("加载角色菜单列表树")
     @GetMapping("/roleMenuTreeData")
     @ResponseBody
     public List<Ztree> roleMenuTreeData(SysRole role)
@@ -175,6 +175,7 @@ public class SysMenuController extends BaseController
     /**
      * 加载所有菜单列表树
      */
+    @ApiOperation("加载所有菜单列表树")
     @GetMapping("/menuTreeData")
     @ResponseBody
     public List<Ztree> menuTreeData()
